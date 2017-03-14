@@ -9,6 +9,7 @@ using TestSharp;
 namespace GeneticSharp.Domain.UnitTests.Crossovers
 {
     [TestFixture]
+    [Category("Crossovers")]
     public class CrossoverBaseTest
     {
         [Test]

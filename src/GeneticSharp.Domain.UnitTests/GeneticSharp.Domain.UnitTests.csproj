@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E415AA4F-C497-4908-96FC-CBA4F7604892}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GeneticSharp.Domain.UnitTests</RootNamespace>
@@ -28,6 +26,12 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>GeneticSharp.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Rhino.Mocks">
@@ -37,30 +41,32 @@
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="Ionic.Utils.Zip">
-      <HintPath>..\packages\TestSharp.1.0.2\lib\net40\Ionic.Utils.Zip.dll</HintPath>
+    <Reference Include="HelperSharp, Version=1.0.5560.27038, Culture=neutral, PublicKeyToken=3d44152485e1a4e1">
+      <HintPath>..\packages\HelperSharp.0.0.4.2\lib\net35\HelperSharp.dll</HintPath>
     </Reference>
-    <Reference Include="TestSharp">
-      <HintPath>..\packages\TestSharp.1.0.2\lib\net40\TestSharp.dll</HintPath>
+    <Reference Include="Ionic.Utils.Zip, Version=1.4.0.1, Culture=neutral, PublicKeyToken=c551e179877da246">
+      <HintPath>..\packages\TestSharp.1.0.3\lib\net40\Ionic.Utils.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="HelperSharp">
-      <HintPath>..\packages\HelperSharp.0.0.2.9\lib\net35\HelperSharp.dll</HintPath>
+    <Reference Include="TestSharp, Version=0.0.6.0, Culture=neutral, PublicKeyToken=76c905e92dbc6707">
+      <HintPath>..\packages\TestSharp.1.0.3\lib\net40\TestSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="Chromosomes\ChromosomeBaseTest.cs" />
+    <Compile Include="Chromosomes\GeneTest.cs" />
     <Compile Include="Crossovers\CrossoverBaseTest.cs" />
     <Compile Include="Crossovers\CutAndSpliceCrossoverTest.cs" />
     <Compile Include="Crossovers\CycleCrossoverTest.cs" />
     <Compile Include="Crossovers\OnePointCrossoverTest.cs" />
     <Compile Include="Crossovers\OrderedCrossoverTest.cs" />
+    <Compile Include="Crossovers\CrossoverExceptionTest.cs" />
     <Compile Include="Crossovers\ThreeParentCrossoverTest.cs" />
     <Compile Include="Crossovers\TwoPointCrossoverTest.cs" />
     <Compile Include="Crossovers\UniformCrossoverTest.cs" />
+    <Compile Include="Chromosomes\FitnessExceptionTest.cs" />
+    <Compile Include="Mutations\MutationExceptionTest.cs" />
     <Compile Include="Mutations\TworsMutationTest.cs" />
     <Compile Include="Mutations\UniformMutationTest.cs" />
     <Compile Include="Populations\ChromosomeStub.cs" />
@@ -69,10 +75,13 @@
     <Compile Include="Populations\PerformanceGenerationStrategyTest.cs" />
     <Compile Include="Populations\TrackingGenerationStrategyTest.cs" />
     <Compile Include="Randomizations\BasicRandomizationTest.cs" />
+    <Compile Include="Randomizations\RandomizationExtensionsTest.cs" />
     <Compile Include="Randomizations\RandomizationProviderTest.cs" />
     <Compile Include="Populations\PopulationTest.cs" />
     <Compile Include="Populations\FitnessStub.cs" />
     <Compile Include="Reinsertions\ReinsertionServiceTest.cs" />
+    <Compile Include="Reinsertions\ReinsertionExceptionTest.cs" />
+    <Compile Include="Selections\SelectionExceptionTest.cs" />
     <Compile Include="Selections\RouletteWheelSelectionTest.cs" />
     <Compile Include="Selections\EliteSelectionTest.cs" />
     <Compile Include="Mutations\ReverseSequenceMutationTest.cs" />
@@ -92,12 +101,15 @@
     <Compile Include="Terminations\TerminationServiceTest.cs" />
     <Compile Include="GeneticAlgorithmTest.cs" />
     <Compile Include="Terminations\FitnessThresholdTerminationTest.cs" />
-    <Compile Include="Populations\PopulationService.cs" />
+    <Compile Include="Populations\PopulationServiceTest.cs" />
     <Compile Include="Reinsertions\PureReinsertionTest.cs" />
     <Compile Include="Reinsertions\ReinsertionBaseTest.cs" />
     <Compile Include="Reinsertions\UniformReinsertionTest.cs" />
     <Compile Include="Reinsertions\ElitistReinsertionTest.cs" />
     <Compile Include="Reinsertions\FitnessBasedReinsertionTest.cs" />
+    <Compile Include="Randomizations\FastRandomRandomizationTest.cs" />
+    <Compile Include="Crossovers\OrderBasedCrossoverTest.cs" />
+    <Compile Include="Crossovers\PositionBasedCrossoverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GeneticSharp.Domain\GeneticSharp.Domain.csproj">
@@ -114,9 +126,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="GeneticSharp.snk" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <ItemGroup />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

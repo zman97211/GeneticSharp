@@ -1,11 +1,12 @@
 using System;
-using NUnit.Framework;
 using GeneticSharp.Domain.Reinsertions;
+using NUnit.Framework;
 using TestSharp;
 
 namespace GeneticSharp.Domain.UnitTests.Reinsertions
 {
     [TestFixture()]
+    [Category("Reinsertions")]
     public class ReinsertionServiceTest
     {
         [Test()]

@@ -1,31 +1,34 @@
 ﻿using System;
 using System.ComponentModel;
 using GeneticSharp.Domain.Chromosomes;
+using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Fitnesses;
+using GeneticSharp.Domain.Mutations;
+using GeneticSharp.Domain.Selections;
 using GeneticSharp.Extensions.Tsp;
 using Gtk;
 using HelperSharp;
 
 namespace GeneticSharp.Runner.GtkApp.Samples
 {
-	/// <summary>
-	/// Tsp sample controller.
-	/// </summary>
-	[DisplayName("TSP")]
+    /// <summary>
+    /// TSP (Travelling Salesman Problem) sample controller.
+    /// </summary>
+    [DisplayName("TSP")]
     public class TspSampleController : SampleControllerBase
     {
-		#region Fields
+        #region Fields
         private TspFitness m_fitness;
-        private int m_numberOfCities = 10;
+        private int m_numberOfCities = 50;
         private bool m_showIndexes = true;
         private TspChromosome m_bestChromosome;
-		#endregion
+        #endregion
 
-		#region Methods
-		/// <summary>
-		/// Creates the config widget.
-		/// </summary>
-		/// <returns>The config widget.</returns>
+        #region Methods
+        /// <summary>
+        /// Creates the config widget.
+        /// </summary>
+        /// <returns>The config widget.</returns>
         public override Gtk.Widget CreateConfigWidget()
         {
             var container = new VBox();
@@ -34,7 +37,7 @@ namespace GeneticSharp.Runner.GtkApp.Samples
             citiesNumber.Value = m_numberOfCities;
             citiesNumber.ValueChanged += delegate
             {
-                m_numberOfCities = citiesNumber.ValueAsInt - (citiesNumber.ValueAsInt  % 2);
+                m_numberOfCities = citiesNumber.ValueAsInt - (citiesNumber.ValueAsInt % 2);
                 citiesNumber.Value = m_numberOfCities;
                 OnReconfigured();
             };
@@ -52,7 +55,8 @@ namespace GeneticSharp.Runner.GtkApp.Samples
             var showIndexes = new CheckButton();
             showIndexes.Active = m_showIndexes;
             showIndexes.Label = "Show indexes";
-            showIndexes.Toggled += delegate {
+            showIndexes.Toggled += delegate
+            {
                 m_showIndexes = showIndexes.Active;
             };
 
@@ -61,10 +65,10 @@ namespace GeneticSharp.Runner.GtkApp.Samples
             return container;
         }
 
-		/// <summary>
-		/// Creates the fitness.
-		/// </summary>
-		/// <returns>The fitness.</returns>
+        /// <summary>
+        /// Creates the fitness.
+        /// </summary>
+        /// <returns>The fitness.</returns>
         public override IFitness CreateFitness()
         {
             var r = Context.DrawingArea;
@@ -73,13 +77,28 @@ namespace GeneticSharp.Runner.GtkApp.Samples
             return m_fitness;
         }
 
-		/// <summary>
-		/// Creates the chromosome.
-		/// </summary>
-		/// <returns>The chromosome.</returns>
+        /// <summary>
+        /// Creates the chromosome.
+        /// </summary>
+        /// <returns>The chromosome.</returns>
         public override IChromosome CreateChromosome()
         {
             return new TspChromosome(m_numberOfCities);
+        }
+
+        public override ICrossover CreateCrossover()
+        {
+            return new OrderedCrossover();
+        }
+
+        public override IMutation CreateMutation()
+        {
+            return new ReverseSequenceMutation();
+        }
+
+        public override ISelection CreateSelection()
+        {
+            return new EliteSelection();
         }
 
         /// <summary>
@@ -100,18 +119,18 @@ namespace GeneticSharp.Runner.GtkApp.Samples
             if (population != null && population.CurrentGeneration != null)
             {
                 m_bestChromosome = population.BestChromosome as TspChromosome;
-            }  
+            }
         }
 
-		/// <summary>
-		/// Draws the sample.
-		/// </summary>
+        /// <summary>
+        /// Draws the sample.
+        /// </summary>
         public override void Draw()
         {
             var buffer = Context.Buffer;
             var gc = Context.GC;
             var layout = Context.Layout;
-            
+
             // Draw cities.
             foreach (var c in m_fitness.Cities)
             {
@@ -151,9 +170,9 @@ namespace GeneticSharp.Runner.GtkApp.Samples
                 var firstCity = m_fitness.Cities[Convert.ToInt32(genes[0].Value)];
                 buffer.DrawLine(gc, lastCity.X, lastCity.Y, firstCity.X, firstCity.Y);
 
-                Context.WriteText("Distance: {0:n2}", m_bestChromosome.Distance);                
+                Context.WriteText("Distance: {0:n2}", m_bestChromosome.Distance);
             }
         }
-		#endregion
+        #endregion
     }
 }

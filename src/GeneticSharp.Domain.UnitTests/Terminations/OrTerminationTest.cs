@@ -7,12 +7,13 @@ using TestSharp;
 namespace GeneticSharp.Domain.UnitTests.Terminations
 {
     [TestFixture]
+    [Category("Terminations")]
     public class OrTerminationTest
     {
         [Test()]
         public void AddTermination_Null_Exception()
         {
-            var target = new OrTermination();            
+            var target = new OrTermination();
 
             ExceptionAssert.IsThrowing(new ArgumentNullException("termination"), () =>
             {

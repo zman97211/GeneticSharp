@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using HelperSharp;
 using GeneticSharp.Domain.Chromosomes;
+using HelperSharp;
 
 namespace GeneticSharp.Domain.Crossovers
 {
@@ -15,17 +15,16 @@ namespace GeneticSharp.Domain.Crossovers
     /// <see href="http://en.wikipedia.org/wiki/Crossover_(genetic_algorithm)#Two-point_crossover">Wikipedia</see>
     /// </remarks>
     /// </summary>
-	[DisplayName("Two-Point")]
-	public class TwoPointCrossover : CrossoverBase
+    [DisplayName("Two-Point")]
+    public class TwoPointCrossover : OnePointCrossover
     {
         #region Constructors
-	/// <summary>
-	/// Initializes a new instance of the <see cref="GeneticSharp.Domain.Crossovers.TwoPointCrossover"/> class.
-	/// </summary>
-	/// <param name="swapPointOneGeneIndex">Swap point one gene index.</param>
-	/// <param name="swapPointTwoGeneIndex">Swap point two gene index.</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneticSharp.Domain.Crossovers.TwoPointCrossover"/> class.
+        /// </summary>
+        /// <param name="swapPointOneGeneIndex">Swap point one gene index.</param>
+        /// <param name="swapPointTwoGeneIndex">Swap point two gene index.</param>
         public TwoPointCrossover(int swapPointOneGeneIndex, int swapPointTwoGeneIndex)
-            : base(2, 2, 3)
         {
             if (swapPointOneGeneIndex >= swapPointTwoGeneIndex)
             {
@@ -34,38 +33,41 @@ namespace GeneticSharp.Domain.Crossovers
 
             SwapPointOneGeneIndex = swapPointOneGeneIndex;
             SwapPointTwoGeneIndex = swapPointTwoGeneIndex;
+            MinChromosomeLength = 3;
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GeneticSharp.Domain.Crossovers.TwoPointCrossover"/> class.
-		/// </summary>
-		public TwoPointCrossover() : this(0, 1)
-		{
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneticSharp.Domain.Crossovers.TwoPointCrossover"/> class.
+        /// </summary>
+        public TwoPointCrossover() : this(0, 1)
+        {
+        }
         #endregion
 
-		#region Properties
-		/// <summary>
-		/// Gets or sets the index of the swap point one gene.
-		/// </summary>
-		/// <value>The index of the swap point one gene.</value>
-		public int SwapPointOneGeneIndex { get; set; }
+        #region Properties
+        /// <summary>
+        /// Gets or sets the index of the swap point one gene.
+        /// </summary>
+        /// <value>The index of the swap point one gene.</value>
+        public int SwapPointOneGeneIndex { get; set; }
 
-		/// <summary>
-		/// Gets or sets the index of the swap point two gene.
-		/// </summary>
-		/// <value>The index of the swap point two gene.</value>
-		public int SwapPointTwoGeneIndex { get; set; }
-		#endregion
+        /// <summary>
+        /// Gets or sets the index of the swap point two gene.
+        /// </summary>
+        /// <value>The index of the swap point two gene.</value>
+        public int SwapPointTwoGeneIndex { get; set; }
+        #endregion
 
-        #region Methods
-		/// <summary>
-		/// Performs the cross with specified parents generating the children.
-		/// </summary>
-		/// <param name="parents">Parents.</param>
-		/// <returns>The offspring (children) of the parents.</returns>
+        #region Methods       
+        /// <summary>
+        /// Performs the cross with specified parents generating the children.
+        /// </summary>
+        /// <param name="parents">The parents chromosomes.</param>
+        /// <returns>
+        /// The offspring (children) of the parents.
+        /// </returns>
         protected override IList<IChromosome> PerformCross(IList<IChromosome> parents)
-        {            
+        {
             var firstParent = parents[0];
             var secondParent = parents[1];
             var parentLength = firstParent.Length;
@@ -74,31 +76,27 @@ namespace GeneticSharp.Domain.Crossovers
             if (SwapPointTwoGeneIndex >= swapPointsLength)
             {
                 throw new ArgumentOutOfRangeException(
-
-                    "parents", "The swap point two index is {0}, but there is only {1} genes. The swap should result at least one gene to each sides."
-                    .With(SwapPointTwoGeneIndex, parentLength));
+                    "parents",
+                    "The swap point two index is {0}, but there is only {1} genes. The swap should result at least one gene to each sides.".With(SwapPointTwoGeneIndex, parentLength));
             }
 
-            var firstChild = CreateChild(firstParent, secondParent);
-            var secondChild = CreateChild(secondParent, firstParent);
-
-            return new List<IChromosome>() { firstChild, secondChild };
+            return CreateChildren(firstParent, secondParent);
         }
 
-		/// <summary>
-		/// Creates the child.
-		/// </summary>
-		/// <returns>The child.</returns>
-		/// <param name="leftParent">Left parent.</param>
-		/// <param name="rightParent">Right parent.</param>
-        private IChromosome CreateChild(IChromosome leftParent, IChromosome rightParent)
+        /// <summary>
+        /// Creates the child.
+        /// </summary>
+        /// <returns>The child.</returns>
+        /// <param name="leftParent">Left parent.</param>
+        /// <param name="rightParent">Right parent.</param>
+        protected override IChromosome CreateChild(IChromosome leftParent, IChromosome rightParent)
         {
             var firstCutGenesCount = SwapPointOneGeneIndex + 1;
             var secondCutGenesCount = SwapPointTwoGeneIndex + 1;
             var child = leftParent.CreateNew();
-			child.ReplaceGenes(0, leftParent.GetGenes().Take(firstCutGenesCount).ToArray());
-			child.ReplaceGenes(firstCutGenesCount, rightParent.GetGenes().Skip(firstCutGenesCount).Take(secondCutGenesCount - firstCutGenesCount).ToArray());
-			child.ReplaceGenes(secondCutGenesCount, leftParent.GetGenes().Skip(secondCutGenesCount).ToArray());
+            child.ReplaceGenes(0, leftParent.GetGenes().Take(firstCutGenesCount).ToArray());
+            child.ReplaceGenes(firstCutGenesCount, rightParent.GetGenes().Skip(firstCutGenesCount).Take(secondCutGenesCount - firstCutGenesCount).ToArray());
+            child.ReplaceGenes(secondCutGenesCount, leftParent.GetGenes().Skip(secondCutGenesCount).ToArray());
 
             return child;
         }

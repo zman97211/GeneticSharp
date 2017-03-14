@@ -1,36 +1,33 @@
-using System;
-using System.Collections.Generic;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Randomizations;
 using NUnit.Framework;
 using Rhino.Mocks;
-using TestSharp;
-using HelperSharp;
 
 namespace GeneticSharp.Domain.UnitTests.Mutations
 {
     [TestFixture]
+    [Category("Mutations")]
     public class TworsMutationTest
     {
         [TearDown]
         public void Cleanup()
         {
             RandomizationProvider.Current = new BasicRandomization();
-        }      
+        }
 
         [Test()]
         public void Mutate_NoProbality_NoExchangeGenes()
         {
             var target = new TworsMutation();
             var chromosome = MockRepository.GenerateStub<ChromosomeBase>(4);
-			chromosome.ReplaceGenes(0, new Gene[] 
-            { 
-				new Gene(1),
-				new Gene(2),
-				new Gene(3), 
+            chromosome.ReplaceGenes(0, new Gene[]
+            {
+                new Gene(1),
+                new Gene(2),
+                new Gene(3),
                 new Gene(4),
-			});
+            });
 
             var rnd = MockRepository.GenerateMock<IRandomization>();
             rnd.Expect(r => r.GetDouble()).Return(0.1);
@@ -45,7 +42,7 @@ namespace GeneticSharp.Domain.UnitTests.Mutations
             Assert.AreEqual(4, chromosome.GetGene(3).Value);
 
             rnd.VerifyAllExpectations();
-            chromosome.VerifyAllExpectations();   
+            chromosome.VerifyAllExpectations();
         }
 
         [Test()]
@@ -53,16 +50,16 @@ namespace GeneticSharp.Domain.UnitTests.Mutations
         {
             var target = new TworsMutation();
             var chromosome = MockRepository.GenerateStub<ChromosomeBase>(4);
-			chromosome.ReplaceGenes(0, new Gene[] 
-			                                         { 
-				new Gene(1),
-				new Gene(2),
-				new Gene(3), 
+            chromosome.ReplaceGenes(0, new Gene[]
+                                                     {
+                new Gene(1),
+                new Gene(2),
+                new Gene(3),
                 new Gene(4),
-			});
+            });
 
             var rnd = MockRepository.GenerateMock<IRandomization>();
-			rnd.Expect(r => r.GetUniqueInts(2, 0, 4)).Return(new int[] {0, 2});
+            rnd.Expect(r => r.GetUniqueInts(2, 0, 4)).Return(new int[] { 0, 2 });
             RandomizationProvider.Current = rnd;
 
             target.Mutate(chromosome, 1);
@@ -74,7 +71,7 @@ namespace GeneticSharp.Domain.UnitTests.Mutations
             Assert.AreEqual(4, chromosome.GetGene(3).Value);
 
             rnd.VerifyAllExpectations();
-            chromosome.VerifyAllExpectations();            
-        }       
+            chromosome.VerifyAllExpectations();
+        }
     }
 }

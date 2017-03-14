@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Populations;
@@ -7,6 +6,7 @@ using NUnit.Framework;
 namespace GeneticSharp.Domain.UnitTests.Populations
 {
     [TestFixture]
+    [Category("Populations")]
     public class TrackingGenerationStrategyTest
     {
         [Test]
@@ -18,7 +18,7 @@ namespace GeneticSharp.Domain.UnitTests.Populations
             population.CreateInitialGeneration();
             target.RegisterNewGeneration(population);
             Assert.AreEqual(1, population.Generations.Count);
-            
+
             population.CreateNewGeneration(new List<IChromosome>() { new ChromosomeStub(), new ChromosomeStub() });
             target.RegisterNewGeneration(population);
             Assert.AreEqual(2, population.Generations.Count);

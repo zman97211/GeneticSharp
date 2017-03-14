@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Randomizations;
@@ -10,9 +9,10 @@ namespace GeneticSharp.Domain.Selections
     /// <summary>
     /// Stochastic Universal Sampling.
     /// <remarks>
+    /// Also know as: Roulette wheel selection.
     /// Is a kind of Fitness Proportionate Selection. 
     /// <see href=" http://watchmaker.uncommons.org/manual/ch03s02.html">Fitness-Proportionate Selection</see>
-    /// 
+    /// <para>
     /// Stochastic Universal Sampling is an elaborately-named variation of roulette wheel selection. 
     /// Stochastic Universal Sampling ensures that the observed selection frequencies of each individual 
     /// are in line with the expected frequencies. So if we have an individual that occupies 4.5% of the 
@@ -20,21 +20,19 @@ namespace GeneticSharp.Domain.Selections
     /// between four and five times. Stochastic Universal Sampling guarantees this. The individual will be 
     /// selected either four times or five times, not three times, not zero times and not 100 times. 
     /// Standard roulette wheel selection does not make this guarantee.
-    /// 
-    /// 
+    /// </para>
     /// <see href="http://en.wikipedia.org/wiki/Stochastic_universal_sampling">Wikipedia</see>
     /// </remarks>
     /// </summary>
     [DisplayName("Stochastic Universal Sampling")]
-    public class StochasticUniversalSamplingSelection : SelectionBase
+    public class StochasticUniversalSamplingSelection : RouletteWheelSelection
     {
         #region Constructors
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="GeneticSharp.Domain.Selections.StochasticUniversalSamplingSelection"/> class.
-		/// </summary>
+        /// <summary>
+        /// Initializes a new instance of the
+        /// <see cref="GeneticSharp.Domain.Selections.StochasticUniversalSamplingSelection"/> class.
+        /// </summary>
         public StochasticUniversalSamplingSelection()
-            : base(2)
         {
         }
         #endregion
@@ -51,34 +49,29 @@ namespace GeneticSharp.Domain.Selections
         protected override IList<IChromosome> PerformSelectChromosomes(int number, Generation generation)
         {
             var chromosomes = generation.Chromosomes;
-            var selected = new List<IChromosome>();
-            var sumFitness = chromosomes.Sum(c => c.Fitness.Value);
             var rouleteWheel = new List<double>();
-            var accumulativePercent = 0.0;
             double stepSize = 1.0 / number;
 
-            foreach (var c in chromosomes)
-            {
-                accumulativePercent += c.Fitness.Value / sumFitness;
-                rouleteWheel.Add(accumulativePercent);
-            }
+            CalculateCumulativePercentFitness(chromosomes, rouleteWheel);
 
             var pointer = RandomizationProvider.Current.GetDouble();
 
-            for (int i = 0; i < number; i++)
-            {                
-                if (pointer > 1.0)
+            return SelectFromWheel(
+                number,
+                chromosomes,
+                rouleteWheel,
+                () =>
                 {
-                    pointer -= 1.0;
-                }
+                    if (pointer > 1.0)
+                    {
+                        pointer -= 1.0;
+                    }
 
-                var chromosomeIndex = rouleteWheel.Select((value, index) => new { Value = value, Index = index }).FirstOrDefault(r => r.Value >= pointer).Index;
-                selected.Add(chromosomes[chromosomeIndex]);
+                    var currentPointer = pointer;
+                    pointer += stepSize;
 
-                pointer += stepSize;                
-            }
-
-            return selected;
+                    return currentPointer;
+                });
         }
         #endregion
     }

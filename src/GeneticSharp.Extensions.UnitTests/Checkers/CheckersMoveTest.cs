@@ -6,6 +6,7 @@ using TestSharp;
 namespace GeneticSharp.Extensions.UnitTests.Checkers
 {
     [TestFixture]
+    [Category("Extensions")]
     public class CheckersMoveTest
     {
         [Test]
@@ -32,7 +33,7 @@ namespace GeneticSharp.Extensions.UnitTests.Checkers
             ExceptionAssert.IsThrowing(new ArgumentNullException("toSquare"), () =>
             {
                 new CheckersMove(new CheckersPiece(CheckersPlayer.PlayerOne) { CurrentSquare = new CheckersSquare(0, 1) }, null);
-            });            
-        }     
+            });
+        }
     }
 }
